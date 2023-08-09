@@ -1,1 +1,5 @@
-
+spring:
+  security:
+    jwt:
+      key: reineishyanami
+      expire: 7

@@ -17,6 +17,13 @@ public record ApiResponse<T>(int code, T data, String message) {
     }
 
 
+    public static <T> ApiResponse<T> unauthorized(String message) {
+        return failure(401, message);
+    }
+    public static <T> ApiResponse<T> forbidden(String message) {
+        return failure(403, message);
+    }
+
     public static <T> ApiResponse<T> failure(int code, String message) {
         return new ApiResponse<>(code, null, message);
     }
