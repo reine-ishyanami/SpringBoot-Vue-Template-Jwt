@@ -1,5 +1,6 @@
 package com.reine.backend.entity.dto;
 
+import com.reine.backend.entity.BaseData;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "db_account")
-public class Account {
+public class Account implements BaseData {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

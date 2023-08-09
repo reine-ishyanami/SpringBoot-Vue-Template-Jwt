@@ -7,5 +7,14 @@ import java.util.Date;
 /**
  * @author reine
  */
-public record AuthorizeVO(String username, String role, String token, Date expire) {
+@Data
+public class AuthorizeVO {
+
+    private String username;
+
+    private String role;
+
+    private String token;
+
+    private Date expire;
 }

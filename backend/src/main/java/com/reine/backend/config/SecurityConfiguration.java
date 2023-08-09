@@ -97,13 +97,13 @@ public class SecurityConfiguration {
         response.setContentType("application/json;charset=utf-8");
         User user = (User) authentication.getPrincipal();
         Account account = AccountThreadLocal.get();
-        AccountThreadLocal.remove();
-        Integer id = account.getId();
-        String username = account.getUsername();
-        String role = account.getRole();
-        String token = utils.createJwt(user, id, username);
-        AuthorizeVO vo = new AuthorizeVO(username, role, token, utils.expireTime());
+        String token = utils.createJwt(user, account.getId(), account.getUsername());
+        AuthorizeVO vo =account.asViewObject(AuthorizeVO.class, v -> {
+            v.setToken(token);
+            v.setExpire(utils.expireTime());
+        });
         response.getWriter().write(ApiResponse.success(vo).asJsonString());
+        AccountThreadLocal.remove();
     }
 
     public void onAuthenticationFailure(
