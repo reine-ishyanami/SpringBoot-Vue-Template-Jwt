@@ -1,10 +1,11 @@
 package com.reine.backend.config;
 
 import com.reine.backend.entity.ApiResponse;
+import com.reine.backend.entity.dto.Account;
 import com.reine.backend.entity.vo.response.AuthorizeVO;
 import com.reine.backend.filter.JwtAuthorizeFilter;
+import com.reine.backend.utils.AccountThreadLocal;
 import com.reine.backend.utils.JwtUtils;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -93,10 +94,15 @@ public class SecurityConfiguration {
             HttpServletResponse response,
             Authentication authentication
     ) throws IOException {
-        User user = (User) authentication.getPrincipal();
-        String token = utils.createJwt(user, 1, "reine");
         response.setContentType("application/json;charset=utf-8");
-        AuthorizeVO vo = new AuthorizeVO("reine", "", token, utils.expireTime());
+        User user = (User) authentication.getPrincipal();
+        Account account = AccountThreadLocal.get();
+        AccountThreadLocal.remove();
+        Integer id = account.getId();
+        String username = account.getUsername();
+        String role = account.getRole();
+        String token = utils.createJwt(user, id, username);
+        AuthorizeVO vo = new AuthorizeVO(username, role, token, utils.expireTime());
         response.getWriter().write(ApiResponse.success(vo).asJsonString());
     }
 
