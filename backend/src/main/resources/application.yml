@@ -8,6 +8,8 @@ spring:
     jwt:
       key: reine-ishyanami
       expire: 7
+    filter:
+      order: -100
   jpa:
     show-sql: true
     hibernate:
