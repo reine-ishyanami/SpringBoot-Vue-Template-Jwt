@@ -19,7 +19,7 @@ export const takeAccessToken = () => {
 }
 
 
-const deleteAccessToken = () => {
+export const deleteAccessToken = () => {
     localStorage.removeItem(authItemName)
     sessionStorage.removeItem(authItemName)
 }

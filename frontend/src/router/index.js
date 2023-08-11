@@ -1,8 +1,9 @@
 import {createRouter, createWebHistory} from 'vue-router'
+import {unauthorized} from "@/api";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
-    routes:[
+    routes: [
         {
             path: '/',
             name: 'welcome',
@@ -14,8 +15,20 @@ const router = createRouter({
                     component: () => import('@/views/welcome/Login.vue'),
                 }
             ]
+        },
+        {
+            path: '/index',
+            name: 'index',
+            component: () => import('@/views/Index.vue'),
         }
     ]
+})
+
+router.beforeEach((to, from, next) => {
+    const isUnauthorized = unauthorized()
+    if (to.name.startsWith('welcome-') && !isUnauthorized) next('/index')
+    else if (to.fullPath.startsWith('/index') && isUnauthorized) next('/')
+    else next()
 })
 
 export default router

@@ -1,14 +1,14 @@
 package com.reine.backend.utils;
 
 import com.reine.backend.entity.dto.Account;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * @author reine
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AccountThreadLocal {
-
-    private AccountThreadLocal() {
-    }
 
     private static final ThreadLocal<Account> ACCOUNT_LOCAL = new ThreadLocal<>();
 
