@@ -19,7 +19,8 @@ const rules = reactive({
   ],
   passwordRule: [
     v => !!v || "请输入密码",
-    v => (v && v.length <= 10) || "密码必须小于10个字符"
+    v => (v && v.length <= 20) || "密码必须小于10个字符",
+    v => (v && v.length >= 6) || "密码必须大于6个字符"
   ]
 })
 
