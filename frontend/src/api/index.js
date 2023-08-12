@@ -2,7 +2,8 @@ import axios from "axios";
 import {takeAccessToken, deleteAccessToken, storeAccessToken} from "@/api/token";
 
 const defaultFailure = (message, code, url) => console.warn(`请求地址: ${url}, 状态码: ${code}, 错误信息: ${message}`)
-const defaultError = (err) => console.error("发生了一些错误，请联系管理员")
+const defaultError = () => console.error("发生了一些错误，请联系管理员")
+
 
 const accessHeader = () => {
     const token = takeAccessToken()
@@ -37,6 +38,8 @@ const internalGet = (url, header, success, failure, error) => {
 const get = (url, success, failure = defaultFailure) => internalGet(url, accessHeader(), success, failure)
 const post = (url, data, success, failure = defaultFailure) => internalPost(url, data, accessHeader(), success, failure)
 
+export const unauthorized = () => !takeAccessToken()
+
 export const login = (username, password, remember, success, failure, error) => {
     internalPost('/api/auth/login', {
         username,
@@ -56,4 +59,17 @@ export const logout = (success, failure) => {
     }, failure)
 }
 
-export const unauthorized = () => !takeAccessToken()
+export const askRegisterCode = (email, success, failure) => {
+    if (!/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(email)) {
+        failure('请检查邮箱格式是否正确')
+        return
+    }
+    internalGet(`/api/auth/ask-code?email=${email}&type=register`, {}, success, failure)
+}
+
+export const register = ({username, email, password, code}, success, failure) => {
+    console.log(username, email, password, code)
+    internalPost('/api/auth/register', {
+        username, email, password, code
+    }, {}, success, failure)
+}

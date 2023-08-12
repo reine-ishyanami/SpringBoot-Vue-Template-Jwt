@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.stream.StreamListener;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -41,6 +42,10 @@ public class MailQueueListener implements StreamListener<String, MapRecord<Strin
         SimpleMailMessage mailMessage = EmailType.valueOf(type.toUpperCase()).setCode(code).generateMailMessage(username, email);
         streamUtils.delete(stream, id.getValue());
         if (mailMessage == null) return;
-        sender.send(mailMessage);
+        try {
+            sender.send(mailMessage);
+        } catch (MailException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

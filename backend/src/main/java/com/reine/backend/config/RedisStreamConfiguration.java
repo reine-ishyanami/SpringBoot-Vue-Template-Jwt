@@ -70,7 +70,7 @@ public class RedisStreamConfiguration {
         } catch (RedisSystemException ignore) {//避免组已存在异常 BUSYGROUP Consumer Group name already exists
         }
 
-        // 消费组B,自动ack
+        // 消费组，自动ack
         container.receiveAutoAck(
                 Consumer.from(
                         Constant.REDIS_STREAM_CONSUMER_GROUP,

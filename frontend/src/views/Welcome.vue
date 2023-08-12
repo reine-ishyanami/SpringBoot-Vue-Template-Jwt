@@ -1,6 +1,24 @@
 <script setup>
 
-import Login from "@/views/welcome/Login.vue";
+import {reactive} from "vue";
+
+const alertBox = reactive({
+  alert: false,
+  type: 'success',
+  message: ''
+})
+
+const alertAction = ({type, message}) => {
+  alertBox.type = type
+  alertBox.message = message
+  alertBox.alert = true
+  const timer = setInterval(() => {
+    alertBox.alert = false
+    clearInterval(timer)
+  }, 3000)
+}
+
+
 </script>
 
 <template>
@@ -18,7 +36,18 @@ import Login from "@/views/welcome/Login.vue";
       <div>Vue3 登录界面模板</div>
     </div>
     <div class="right-card">
-      <Login/>
+      <div style="position: absolute;">
+        <v-alert
+            v-model="alertBox.alert"
+            closable
+            :type="alertBox.type"
+            width="500"
+        >
+          {{ alertBox.message }}
+        </v-alert>
+      </div>
+<!--      TODO 过渡动画-->
+      <router-view @alert="alertAction"/>
     </div>
   </div>
 </template>
