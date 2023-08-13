@@ -40,7 +40,7 @@ const post = (url, data, success, failure = defaultFailure) => internalPost(url,
 
 export const unauthorized = () => !takeAccessToken()
 
-export const login = (username, password, remember, success, failure, error) => {
+export const login = ({username, password, remember}, success, failure, error) => {
     internalPost('/api/auth/login', {
         username,
         password
@@ -70,5 +70,17 @@ export const askResetCode = (email, success, failure) => {
 export const register = ({username, email, password, code}, success, failure) => {
     internalPost('/api/auth/register', {
         username, email, password, code
+    }, {}, success, failure)
+}
+
+export const resetConfirm = ({email, code}, success, failure) => {
+    internalPost('/api/auth/reset-confirm', {
+        email, code
+    }, {}, success, failure)
+}
+
+export const resetPassword = ({email, password, code}, success, failure) => {
+    internalPost('/api/auth/reset-password', {
+        email, password, code
     }, {}, success, failure)
 }

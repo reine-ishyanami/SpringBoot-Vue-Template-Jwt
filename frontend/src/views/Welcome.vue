@@ -2,18 +2,18 @@
 
 import {reactive} from "vue";
 
-const alertBox = reactive({
+const alertArgs = reactive({
   alert: false,
   type: 'success',
   message: ''
 })
 
 const alertAction = ({type, message}) => {
-  alertBox.type = type
-  alertBox.message = message
-  alertBox.alert = true
+  alertArgs.type = type
+  alertArgs.message = message
+  alertArgs.alert = true
   const timer = setInterval(() => {
-    alertBox.alert = false
+    alertArgs.alert = false
     clearInterval(timer)
   }, 3000)
 }
@@ -38,12 +38,12 @@ const alertAction = ({type, message}) => {
     <div class="right-card">
       <div style="position: absolute;">
         <v-alert
-            v-model="alertBox.alert"
+            v-model="alertArgs.alert"
             closable
-            :type="alertBox.type"
+            :type="alertArgs.type"
             width="500"
         >
-          {{ alertBox.message }}
+          {{ alertArgs.message }}
         </v-alert>
       </div>
 <!--      TODO 过渡动画-->

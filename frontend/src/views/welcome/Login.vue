@@ -36,19 +36,19 @@ const alertType = reactive({
 const loginAction = async () => {
   const {valid} = await formRef.value.validate()
   if (valid) {
-    login(form.username, form.password, form.remember, (data) => {
+    login(form, (data) => {
       alertType.message = `登录成功，欢迎${data.username}进入系统`
       alertType.type = "success"
       router.push('/index')
-      emit('alert', {...alertType})
+      emit('alert', alertType)
     }, (message) => {
       alertType.message = message
       alertType.type = "warning"
-      emit('alert', {...alertType})
+      emit('alert', alertType)
     }, () => {
       alertType.message = "登录异常"
       alertType.type = "error"
-      emit('alert', {...alertType})
+      emit('alert', alertType)
     })
   }
 }

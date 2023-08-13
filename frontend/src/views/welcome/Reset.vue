@@ -1,7 +1,7 @@
 <script setup>
 import {VStepper} from "vuetify/labs/components";
 import {computed, reactive, ref} from "vue";
-import {askResetCode} from "@/api";
+import {askResetCode, resetConfirm, resetPassword} from "@/api";
 import router from "@/router";
 
 const visible = ref(false)
@@ -41,13 +41,13 @@ const alertType = reactive({
 
 const emit = defineEmits(['alert'])
 
-const getCode = () => {
+const getCodeAction = () => {
   if (isValidEmail) {
     cool.value = 60
     askResetCode(form.email, () => {
       alertType.message = '验证码已发送到您的邮箱，请注意查收'
       alertType.type = 'success'
-      emit('alert', {...alertType})
+      emit('alert', alertType)
       const coolTimer = setInterval(() => {
         cool.value--
         if (cool.value === 0) {
@@ -58,8 +58,42 @@ const getCode = () => {
       cool.value = 0
       alertType.message = message
       alertType.type = 'warning'
+      emit('alert', alertType)
+    })
+  }
+}
+
+const confirmCodeAction = () => {
+  if (isValidEmail) {
+    resetConfirm(form, () => {
+      alertType.message = '验证码验证成功，请输入新密码'
+      alertType.type = 'success'
+      emit('alert', {...alertType})
+      active.value++
+    }, (message) => {
+      alertType.message = message
+      alertType.type = 'warning'
       emit('alert', {...alertType})
     })
+  }
+}
+
+const resetPasswordAction = () => {
+  if (form.password === form.password_repeat) {
+    resetPassword(form, () => {
+      alertType.message = '密码重置成功，请重新登录'
+      alertType.type = 'success'
+      emit('alert', {...alertType})
+      router.push('/')
+    }, (message) => {
+      alertType.message = message
+      alertType.type = 'warning'
+      emit('alert', {...alertType})
+    })
+  }else {
+    alertType.message = '两次输入的密码不一致'
+    alertType.type = 'warning'
+    emit('alert', {...alertType})
   }
 }
 
@@ -113,7 +147,7 @@ const getCode = () => {
                 <v-btn
                     :disabled="!isValidEmail || cool!==0"
                     size="small"
-                    @click="getCode"
+                    @click="getCodeAction"
                     width="100"
                 >
                   {{ cool > 0 ? cool : '获取验证码' }}
@@ -124,7 +158,7 @@ const getCode = () => {
                 block
                 color="#993333"
                 variant="tonal"
-                @click="active++"
+                @click="confirmCodeAction"
             >
               立即验证
             </v-btn>
@@ -180,7 +214,7 @@ const getCode = () => {
                 block
                 color="#663366"
                 variant="tonal"
-                @click="router.push('/')"
+                @click="resetPasswordAction"
             >
               立即重置密码
             </v-btn>

@@ -47,13 +47,13 @@ const cool = ref(0)
 
 const isValidEmail = computed(() => /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(form.email))
 
-const getCode = () => {
+const getCodeAction = () => {
   if (isValidEmail) {
     cool.value = 60
     askRegisterCode(form.email, () => {
       alertType.message = '验证码已发送到您的邮箱，请注意查收'
       alertType.type = 'success'
-      emit('alert', {...alertType})
+      emit('alert', alertType)
       const coolTimer = setInterval(() => {
         cool.value--
         if (cool.value === 0) {
@@ -64,7 +64,7 @@ const getCode = () => {
       cool.value = 0
       alertType.message = message
       alertType.type = 'warning'
-      emit('alert', {...alertType})
+      emit('alert', alertType)
     })
   }
 }
@@ -72,15 +72,15 @@ const getCode = () => {
 const registerAction = async () => {
   const {valid} = await formRef.value.validate()
   if (valid) {
-    register({...form}, () => {
+    register(form, () => {
       alertType.message = '用户注册成功'
       alertType.type = 'success'
       router.push('/')
-      emit('alert', {...alertType})
+      emit('alert', alertType)
     }, (message) => {
       alertType.message = message
       alertType.type = 'warning'
-      emit('alert', {...alertType})
+      emit('alert', alertType)
     })
   }
 }
@@ -174,7 +174,7 @@ const registerAction = async () => {
               <v-btn
                   :disabled="!isValidEmail || cool!==0"
                   size="small"
-                  @click="getCode"
+                  @click="getCodeAction"
                   width="100"
               >
                 {{ cool > 0 ? cool : '获取验证码' }}
