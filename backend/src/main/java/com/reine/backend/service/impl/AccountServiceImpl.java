@@ -2,7 +2,9 @@ package com.reine.backend.service.impl;
 
 import com.reine.backend.dao.AccountRepository;
 import com.reine.backend.entity.dto.Account;
+import com.reine.backend.entity.vo.request.ConfirmResetVO;
 import com.reine.backend.entity.vo.request.EmailRegisterVO;
+import com.reine.backend.entity.vo.request.EmailResetVo;
 import com.reine.backend.service.AccountService;
 import com.reine.backend.utils.AccountThreadLocal;
 import com.reine.backend.utils.Constant;
@@ -10,6 +12,7 @@ import com.reine.backend.utils.FlowUtils;
 import com.reine.backend.utils.RedisStreamUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -66,7 +69,7 @@ public class AccountServiceImpl implements AccountService {
             Map<String, String> data = Map.of("type", type, "email", email, "code", code);
             String res = streamUtils.addMap(Constant.REDIS_STREAM, data);// 推送验证信息到消息队列
             log.debug(res);
-            redisTemplate.opsForValue().set(Constant.VERIFY_EMAIL_DATA + email, code, 3, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(getKey(email), code, 3, TimeUnit.MINUTES);
             return null;
         }
     }
@@ -80,7 +83,7 @@ public class AccountServiceImpl implements AccountService {
     public String registerEmailAccount(EmailRegisterVO vo) {
         String email = vo.getEmail();
         String username = vo.getUsername();
-        String key = Constant.VERIFY_EMAIL_DATA + email;
+        String key = getKey(email);
         String cacheCode = redisTemplate.opsForValue().get(key);
         if (cacheCode == null) return "请先获取验证码";
         if (!cacheCode.equals(vo.getCode())) return "验证码输入错误，请重新输入";
@@ -94,6 +97,34 @@ public class AccountServiceImpl implements AccountService {
         }
         redisTemplate.delete(key);
         return null;
+    }
+
+    @Override
+    public String resetConfirm(ConfirmResetVO vo) {
+        String email = vo.getEmail();
+        String code = redisTemplate.opsForValue().get(getKey(email));
+        if (code == null) return "请先获取验证码";
+        if (!code.equals(vo.getCode())) return "验证码输入错误，请重新输入";
+        return null;
+    }
+
+    @Override
+    public String resetEmailPassword(EmailResetVo vo) {
+        ConfirmResetVO confirmResetVO = new ConfirmResetVO();
+        BeanUtils.copyProperties(vo, confirmResetVO);
+        String verify = this.resetConfirm(confirmResetVO);
+        if (verify != null) return verify;
+        String email = vo.getEmail();
+        String password = encoder.encode(vo.getPassword());
+        int line = accountRepository.updatePasswordByEmail(email, password);
+        if (line > 0) {
+            redisTemplate.delete(getKey(email));
+        }
+        return null;
+    }
+
+    private static String getKey(String email) {
+        return Constant.VERIFY_EMAIL_DATA + email;
     }
 
     private boolean existsAccountByEmail(String email) {

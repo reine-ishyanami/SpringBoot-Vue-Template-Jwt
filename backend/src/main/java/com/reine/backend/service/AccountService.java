@@ -1,7 +1,9 @@
 package com.reine.backend.service;
 
 import com.reine.backend.entity.dto.Account;
+import com.reine.backend.entity.vo.request.ConfirmResetVO;
 import com.reine.backend.entity.vo.request.EmailRegisterVO;
+import com.reine.backend.entity.vo.request.EmailResetVo;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
@@ -35,4 +37,20 @@ public interface AccountService extends UserDetailsService {
      * @return {@link String}
      */
     String registerEmailAccount(EmailRegisterVO vo);
+
+    /**
+     * 重置密码时的邮件验证
+     *
+     * @param vo 表单信息
+     * @return {@link String}
+     */
+    String resetConfirm(ConfirmResetVO vo);
+
+    /**
+     * 通过电子邮件重置密码
+     *
+     * @param vo 表单信息
+     * @return {@link String}
+     */
+    String resetEmailPassword(EmailResetVo vo);
 }

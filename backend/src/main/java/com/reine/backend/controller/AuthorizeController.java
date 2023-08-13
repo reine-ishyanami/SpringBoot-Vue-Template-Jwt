@@ -1,7 +1,9 @@
 package com.reine.backend.controller;
 
 import com.reine.backend.entity.ApiResponse;
+import com.reine.backend.entity.vo.request.ConfirmResetVO;
 import com.reine.backend.entity.vo.request.EmailRegisterVO;
+import com.reine.backend.entity.vo.request.EmailResetVo;
 import com.reine.backend.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -42,11 +44,22 @@ public class AuthorizeController {
         return this.messageHandler(() -> service.registerEmailVerifyCode(type, email, request.getRemoteAddr()));
     }
 
-
     @Operation(summary = "注册用户")
     @PostMapping("/register")
     public ApiResponse<Void> register(@RequestBody @Valid EmailRegisterVO vo) {
         return this.messageHandler(() -> service.registerEmailAccount(vo));
+    }
+
+    @Operation(summary = "验证重置密码验证码")
+    @PostMapping("/reset-confirm")
+    public ApiResponse<Void> resetConfirm(@RequestBody @Valid ConfirmResetVO vo) {
+        return this.messageHandler(() -> service.resetConfirm(vo));
+    }
+
+    @Operation(summary = "重置密码")
+    @PostMapping("/reset-password")
+    public ApiResponse<Void> resetPassword(@RequestBody @Valid EmailResetVo vo) {
+        return this.messageHandler(() -> service.resetEmailPassword(vo));
     }
 
     private ApiResponse<Void> messageHandler(Supplier<String> action) {

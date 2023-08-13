@@ -1,5 +1,5 @@
 <script setup>
-import {VStepper, VStepperHeader, VStepperItem} from "vuetify/labs/components";
+import {VStepper} from "vuetify/labs/components";
 import {computed, reactive, ref} from "vue";
 import {askResetCode} from "@/api";
 import router from "@/router";
