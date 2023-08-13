@@ -84,14 +84,13 @@ const loginAction = async () => {
 
           <div class="text-subtitle-2 text-medium-emphasis d-flex align-center justify-space-between">
             Password
-
-            <router-link
+            <a
                 class="text-caption text-decoration-none text-blue"
-                to="#"
-                target="_blank"
+                href="#"
+                @click="router.push('/reset')"
             >
               忘记密码?
-            </router-link>
+            </a>
           </div>
 
           <v-text-field
@@ -114,24 +113,21 @@ const loginAction = async () => {
           </v-row>
           <v-btn
               block
-              color="blue"
+              color="#0066cc"
               variant="tonal"
               @click="loginAction"
           >
             立即登录
           </v-btn>
-          <v-card-text class="text-center text-blue"  style="font-size: 10px">
-            莫得账号
+          <v-card-text class="text-center text-blue" style="font-size: 10px" @click="$router.push('/register')">
+            <a
+                class="text-blue text-decoration-none"
+                href="#"
+            >
+              莫得账号，立即注册
+              <v-icon icon="mdi-chevron-right"></v-icon>
+            </a>
           </v-card-text>
-          <v-btn
-              block
-              color="#ff9966"
-              variant="tonal"
-              @click="$router.push('/register')"
-          >
-            立即注册
-          </v-btn>
-
         </v-form>
       </v-card>
     </div>

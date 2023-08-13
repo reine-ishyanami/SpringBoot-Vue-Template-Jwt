@@ -2,6 +2,8 @@ package com.reine.backend.config;
 
 import com.reine.backend.listener.MailQueueListener;
 import com.reine.backend.utils.Constant;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +39,21 @@ public class RedisStreamConfiguration {
 
     private final StringRedisTemplate template;
 
+    @PostConstruct
+    public void initConsumerGroup() {
+        try {
+            template.opsForStream().createGroup(Constant.REDIS_STREAM, Constant.REDIS_STREAM_CONSUMER_GROUP);
+        } catch (RedisSystemException ignore) {
+            //避免组已存在异常 BUSYGROUP Consumer Group name already exists
+        }
+    }
+
+    @PreDestroy
+    public void destroy(){
+
+    }
+
+
     @Bean(initMethod = "start", destroyMethod = "stop")
     public StreamMessageListenerContainer<String, MapRecord<String, String, String>> container() {
         AtomicInteger index = new AtomicInteger(1);
@@ -65,11 +82,6 @@ public class RedisStreamConfiguration {
         StreamMessageListenerContainer<String, MapRecord<String, String, String>> container =
                 StreamMessageListenerContainer.create(factory, options);
 
-        try {
-            template.opsForStream().createGroup(Constant.REDIS_STREAM, Constant.REDIS_STREAM_CONSUMER_GROUP);
-        } catch (RedisSystemException ignore) {//避免组已存在异常 BUSYGROUP Consumer Group name already exists
-        }
-
         // 消费组，自动ack
         container.receiveAutoAck(
                 Consumer.from(
@@ -87,7 +99,7 @@ public class RedisStreamConfiguration {
     private static class StreamErrorHandler implements ErrorHandler {
         @Override
         public void handleError(Throwable t) {
-            t.printStackTrace();
+            log.error("redis stream exception: {}", t.getMessage());
         }
     }
 }

@@ -60,15 +60,14 @@ export const logout = (success, failure) => {
 }
 
 export const askRegisterCode = (email, success, failure) => {
-    if (!/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(email)) {
-        failure('请检查邮箱格式是否正确')
-        return
-    }
     internalGet(`/api/auth/ask-code?email=${email}&type=register`, {}, success, failure)
 }
 
+export const askResetCode = (email, success, failure) => {
+    internalGet(`/api/auth/ask-code?email=${email}&type=reset`, {}, success, failure)
+}
+
 export const register = ({username, email, password, code}, success, failure) => {
-    console.log(username, email, password, code)
     internalPost('/api/auth/register', {
         username, email, password, code
     }, {}, success, failure)

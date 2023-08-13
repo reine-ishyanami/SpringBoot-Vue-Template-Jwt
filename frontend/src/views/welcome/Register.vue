@@ -1,6 +1,6 @@
 <script setup>
 
-import {reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import {askRegisterCode, register} from "@/api";
 import router from "@/router";
 
@@ -17,11 +17,12 @@ const form = reactive({
 const rules = reactive({
   usernameRule: [
     v => !!v || '请输入用户名',
-    v => (v && v.length <= 10) || '用户名必须小于10个字符'
+    v => (v && v.length <= 10) || '用户名必须小于10个字符',
+    v => (v && /^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(v)) || '用户名不能包含特殊字符，只能是汉字字母与数字的组合'
   ],
   emailRule: [
     v => !!v || '请输入电子邮箱地址',
-    v => (v && /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(v)) || '邮箱地址不合法，请重新输入'
+    v => (v && isValidEmail) || '邮箱地址不合法，请重新输入'
   ],
   passwordRule: [
     v => !!v || '请输入密码',
@@ -44,23 +45,28 @@ const alertType = reactive({
 const emit = defineEmits(['alert'])
 const cool = ref(0)
 
+const isValidEmail = computed(() => /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(form.email))
+
 const getCode = () => {
-  askRegisterCode(form.email, () => {
-    alertType.message = '邮件已发送，请注意查收'
-    alertType.type = 'success'
-    emit('alert', {...alertType})
+  if (isValidEmail) {
     cool.value = 60
-    const coolTimer = setInterval(()=>{
-      cool.value--
-      if (cool.value === 0){
-        clearInterval(coolTimer)
-      }
-    },1000)
-  }, (message) => {
-    alertType.message = message
-    alertType.type = 'warning'
-    emit('alert', {...alertType})
-  })
+    askRegisterCode(form.email, () => {
+      alertType.message = '验证码已发送到您的邮箱，请注意查收'
+      alertType.type = 'success'
+      emit('alert', {...alertType})
+      const coolTimer = setInterval(() => {
+        cool.value--
+        if (cool.value === 0) {
+          clearInterval(coolTimer)
+        }
+      }, 1000)
+    }, (message) => {
+      cool.value = 0
+      alertType.message = message
+      alertType.type = 'warning'
+      emit('alert', {...alertType})
+    })
+  }
 }
 
 const registerAction = async () => {
@@ -78,6 +84,7 @@ const registerAction = async () => {
     })
   }
 }
+
 
 </script>
 
@@ -165,36 +172,34 @@ const registerAction = async () => {
           >
             <template #append-inner>
               <v-btn
-                  :disabled="cool!==0"
+                  :disabled="!isValidEmail || cool!==0"
                   size="small"
                   @click="getCode"
                   width="100"
               >
-                {{cool===0?'获取验证码':cool}}
+                {{ cool > 0 ? cool : '获取验证码' }}
               </v-btn>
             </template>
           </v-text-field>
 
           <v-btn
               block
-              color="blue"
+              color="#ff6666"
               variant="tonal"
               @click="registerAction"
           >
             立即注册
           </v-btn>
-          <v-card-text class="text-center text-blue" style="font-size: 10px">
-            已有账号
+          <v-card-text class="text-center text-blue" style="font-size: 10px" @click="$router.push('/')">
+            <a
+                class="text-blue text-decoration-none"
+                href="#"
+                rel="noopener noreferrer"
+            >
+              已有账号，返回登录
+              <v-icon icon="mdi-chevron-right"></v-icon>
+            </a>
           </v-card-text>
-          <v-btn
-              block
-              color="#ff9966"
-              variant="tonal"
-              @click="$router.push('/')"
-          >
-            返回登录
-          </v-btn>
-
         </v-form>
       </v-card>
     </div>

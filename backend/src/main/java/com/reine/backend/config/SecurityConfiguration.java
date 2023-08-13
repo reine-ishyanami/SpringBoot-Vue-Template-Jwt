@@ -41,6 +41,7 @@ public class SecurityConfiguration {
         return http
                 .authorizeHttpRequests(conf -> conf
                         .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .requestMatchers("/v3/**", "/swagger**/**", "/webjars/**", "/doc.html").permitAll()// 放行swagger
                         .anyRequest().authenticated()
                 ).formLogin(conf -> conf
                         .loginProcessingUrl("/api/auth/login")
