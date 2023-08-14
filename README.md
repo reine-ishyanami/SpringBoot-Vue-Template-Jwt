@@ -8,9 +8,10 @@
 1. 将构建工具从`maven`更换为`gradle`
 2. 原项目中用到`fastjson2`的地方更换为`jackson`
 3. 原项目中用到`mybatis-plus`的地方更换为`jpa`
-4. 原项目中使用switch判断进行邮件对象构建处改用`enum`实现
-5. 使用ThreadLocal存储用户数据
-6. 原项目中用到`rabbit-mq`处改用`redis`的`stream`实现消息订阅发布
+4. 原项目中使用`switch`判断进行邮件对象构建处改用`enum`实现
+5. 使用`ThreadLocal`存储用户数据
+6. 原项目中用到`rabbit-mq`处改用`redis`的`stream`实现消息订阅发布（~~电脑没内存，带不动rabbit-mq了~~）
+7. 原项目中用到`swagger`改用`knife4j`（~~也就只是换了个依赖~~）
 
 ### 前端
 1. 原项目中用到`element-plus`的地方更换为`vuetify`
