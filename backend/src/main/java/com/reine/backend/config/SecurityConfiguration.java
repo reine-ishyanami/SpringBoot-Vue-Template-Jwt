@@ -1,7 +1,8 @@
 package com.reine.backend.config;
 
-import com.reine.backend.entity.ApiResponse;
+import com.reine.backend.entity.RestBean;
 import com.reine.backend.entity.dto.Account;
+import com.reine.backend.entity.prop.SecurityProperty;
 import com.reine.backend.entity.vo.response.AuthorizeVO;
 import com.reine.backend.filter.JwtAuthorizeFilter;
 import com.reine.backend.utils.AccountThreadLocal;
@@ -9,6 +10,7 @@ import com.reine.backend.utils.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,6 +25,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -36,12 +41,13 @@ public class SecurityConfiguration {
 
     private final JwtAuthorizeFilter jwtAuthorizeFilter;
 
+    private final SecurityProperty property;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(conf -> conf
-                        .requestMatchers("/api/auth/**", "/error").permitAll()
-                        .requestMatchers("/v3/**", "/swagger**/**", "/webjars/**", "/doc.html").permitAll()// 放行swagger
+                        .requestMatchers(property.getPermitUrl().toArray(new String[]{})).permitAll()
                         .anyRequest().authenticated()
                 ).formLogin(conf -> conf
                         .loginProcessingUrl("/api/auth/login")
@@ -66,7 +72,7 @@ public class SecurityConfiguration {
             AccessDeniedException e
     ) throws IOException {
         response.setContentType("application/json;charset=utf-8");
-        response.getWriter().write(ApiResponse.forbidden(e.getMessage()).asJsonString());
+        response.getWriter().write(RestBean.forbidden(e.getMessage()).asJsonString());
     }
 
     private void onUnauthorized(
@@ -75,7 +81,7 @@ public class SecurityConfiguration {
             AuthenticationException e
     ) throws IOException {
         response.setContentType("application/json;charset=utf-8");
-        response.getWriter().write(ApiResponse.unauthorized(e.getMessage()).asJsonString());
+        response.getWriter().write(RestBean.unauthorized(e.getMessage()).asJsonString());
     }
 
     private void onLogoutSuccess(
@@ -86,8 +92,8 @@ public class SecurityConfiguration {
         response.setContentType("application/json;charset=utf-8");
         PrintWriter writer = response.getWriter();
         String authorization = request.getHeader("Authorization");
-        if (utils.invalidateJwt(authorization)) writer.write(ApiResponse.success().asJsonString());
-        else writer.write(ApiResponse.failure(400, "登出失败").asJsonString());
+        if (utils.invalidateJwt(authorization)) writer.write(RestBean.success().asJsonString());
+        else writer.write(RestBean.failure(400, "登出失败").asJsonString());
     }
 
     public void onAuthenticationSuccess(
@@ -103,7 +109,7 @@ public class SecurityConfiguration {
             v.setToken(token);
             v.setExpire(utils.expireTime());
         });
-        response.getWriter().write(ApiResponse.success(vo).asJsonString());
+        response.getWriter().write(RestBean.success(vo).asJsonString());
         AccountThreadLocal.remove();
     }
 
@@ -113,6 +119,6 @@ public class SecurityConfiguration {
             AuthenticationException exception
     ) throws IOException {
         response.setContentType("application/json;charset=utf-8");
-        response.getWriter().write(ApiResponse.failure(401, exception.getMessage()).asJsonString());
+        response.getWriter().write(RestBean.failure(401, exception.getMessage()).asJsonString());
     }
 }

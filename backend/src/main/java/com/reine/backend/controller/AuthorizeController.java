@@ -1,6 +1,6 @@
 package com.reine.backend.controller;
 
-import com.reine.backend.entity.ApiResponse;
+import com.reine.backend.entity.RestBean;
 import com.reine.backend.entity.vo.request.ConfirmResetVO;
 import com.reine.backend.entity.vo.request.EmailRegisterVO;
 import com.reine.backend.entity.vo.request.EmailResetVo;
@@ -36,7 +36,7 @@ public class AuthorizeController {
             @Parameter(name = "email", description = "邮件地址", required = true, in = ParameterIn.QUERY),
             @Parameter(name = "type", description = "验证码类型", required = true, in = ParameterIn.QUERY)
     })
-    public ApiResponse<Void> askVerifyCode(
+    public RestBean<Void> askVerifyCode(
             @RequestParam @Email String email,
             @RequestParam @Pattern(regexp = "(register|reset)") String type,
             HttpServletRequest request
@@ -46,25 +46,25 @@ public class AuthorizeController {
 
     @Operation(summary = "注册用户")
     @PostMapping("/register")
-    public ApiResponse<Void> register(@RequestBody @Valid EmailRegisterVO vo) {
+    public RestBean<Void> register(@RequestBody @Valid EmailRegisterVO vo) {
         return this.messageHandler(() -> service.registerEmailAccount(vo));
     }
 
     @Operation(summary = "验证重置密码验证码")
     @PostMapping("/reset-confirm")
-    public ApiResponse<Void> resetConfirm(@RequestBody @Valid ConfirmResetVO vo) {
+    public RestBean<Void> resetConfirm(@RequestBody @Valid ConfirmResetVO vo) {
         return this.messageHandler(() -> service.resetConfirm(vo));
     }
 
     @Operation(summary = "重置密码")
     @PostMapping("/reset-password")
-    public ApiResponse<Void> resetPassword(@RequestBody @Valid EmailResetVo vo) {
+    public RestBean<Void> resetPassword(@RequestBody @Valid EmailResetVo vo) {
         return this.messageHandler(() -> service.resetEmailPassword(vo));
     }
 
-    private ApiResponse<Void> messageHandler(Supplier<String> action) {
+    private RestBean<Void> messageHandler(Supplier<String> action) {
         String msg = action.get();
-        return msg == null ? ApiResponse.success() : ApiResponse.failure(400, msg);
+        return msg == null ? RestBean.success() : RestBean.failure(400, msg);
     }
 
 }

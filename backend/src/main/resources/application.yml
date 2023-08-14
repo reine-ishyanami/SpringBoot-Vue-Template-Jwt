@@ -8,6 +8,13 @@ spring:
     jwt:
       key: reine-ishyanami
       expire: 7
+    permit-url:
+      - "/api/auth/**"
+      - "/error"
+      - "/swagger-ui**/**"
+      - "/v3/api-docs/**"
+      - "/doc.html"
+      - "/webjars/**"
   jpa:
     show-sql: true
     hibernate:
@@ -16,7 +23,3 @@ spring:
     host: smtp.163.com
     username: xxx
     password: xxx
-logging:
-  level:
-    com.reine.backend:
-      debug
