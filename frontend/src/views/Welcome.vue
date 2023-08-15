@@ -46,8 +46,10 @@ const alertAction = ({type, message}) => {
           {{ alertArgs.message }}
         </v-alert>
       </div>
-<!--      TODO 过渡动画-->
-      <router-view @alert="alertAction"/>
+
+      <v-fade-transition>
+        <router-view @alert="alertAction"/>
+      </v-fade-transition>
     </div>
   </div>
 </template>
