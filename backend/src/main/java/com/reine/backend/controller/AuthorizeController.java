@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.function.Supplier;
@@ -26,6 +27,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 @Tag(name = "验证相关接口")
 @RequestMapping("/api/auth")
+@Validated
 public class AuthorizeController {
 
     private final AccountService service;
