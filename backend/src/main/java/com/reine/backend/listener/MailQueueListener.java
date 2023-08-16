@@ -1,6 +1,6 @@
 package com.reine.backend.listener;
 
-import com.reine.backend.utils.EmailType;
+import com.reine.backend.enums.EmailEnum;
 import com.reine.backend.utils.RedisStreamUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class MailQueueListener implements StreamListener<String, MapRecord<Strin
         String code = data.get("code");
         String type = data.get("type");
         log.info("email:{}, code:{}, type: {}", email, code, type);
-        SimpleMailMessage mailMessage = EmailType.valueOf(type.toUpperCase()).setCode(code).generateMailMessage(username, email);
+        SimpleMailMessage mailMessage = EmailEnum.of(type).generateMailMessage(code, username, email);
         streamUtils.delete(stream, id.getValue());
         if (mailMessage == null) return;
         try {

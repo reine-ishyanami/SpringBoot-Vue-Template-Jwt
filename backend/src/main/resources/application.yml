@@ -17,8 +17,6 @@ spring:
       - "/webjars/**"
   jpa:
     show-sql: true
-    hibernate:
-      ddl-auto: update
   mail:
     host: smtp.163.com
     username: xxx
