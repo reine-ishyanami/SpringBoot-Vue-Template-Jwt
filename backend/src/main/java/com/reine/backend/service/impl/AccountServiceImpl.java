@@ -6,10 +6,7 @@ import com.reine.backend.entity.vo.request.ConfirmResetVO;
 import com.reine.backend.entity.vo.request.EmailRegisterVO;
 import com.reine.backend.entity.vo.request.EmailResetVo;
 import com.reine.backend.service.AccountService;
-import com.reine.backend.utils.AccountThreadLocal;
-import com.reine.backend.utils.Constant;
-import com.reine.backend.utils.FlowUtils;
-import com.reine.backend.utils.RedisStreamUtils;
+import com.reine.backend.utils.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -20,7 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +39,8 @@ public class AccountServiceImpl implements AccountService {
     private final RedisStreamUtils streamUtils;
 
     private final PasswordEncoder encoder;
+
+    private final RedisIdWorker worker;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -90,7 +89,9 @@ public class AccountServiceImpl implements AccountService {
         if (this.existsAccountByEmail(email)) return "此邮箱已被注册";
         if (this.existsAccountByUsername(username)) return "此用户名已被注册";
         String password = encoder.encode(vo.getPassword());
-        Account account = new Account(null, username, password, email, "user", new Date());
+        long id = worker.nextId("account");
+        AccountIdThreadLocal.put(id);
+        Account account = new Account(id, username, password, email, "user", LocalDateTime.now());
         account = accountRepository.save(account);
         if (account.getId() == null) {
             return "内部错误，请联系管理员";

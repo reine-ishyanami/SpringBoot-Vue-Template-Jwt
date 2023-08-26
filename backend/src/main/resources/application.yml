@@ -1,9 +1,12 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/test?serverTimezone=UTC%2B8
+    url: jdbc:mysql://localhost:3306/test?serverTimezone=GMT%2B8
     username: root
     password: 123456
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
   security:
     jwt:
       key: reine-ishyanami
@@ -16,6 +19,8 @@ spring:
       - "/doc.html"
       - "/webjars/**"
   jpa:
+    hibernate:
+      ddl-auto: update
     show-sql: true
   mail:
     host: smtp.163.com
