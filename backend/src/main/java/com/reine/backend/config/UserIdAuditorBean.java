@@ -3,6 +3,7 @@ package com.reine.backend.config;
 import com.reine.backend.utils.AccountIdThreadLocal;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
  * @author reine
  */
 @Configuration
+@EnableJpaAuditing
 public class UserIdAuditorBean implements AuditorAware<Long> {
     @Override
     public Optional<Long> getCurrentAuditor() {
