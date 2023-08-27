@@ -1,9 +1,7 @@
 package com.reine.backend.entity.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.reine.backend.entity.BaseData;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +11,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -22,29 +21,21 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(force = true)
 @RequiredArgsConstructor
-@Table(name = "db_account")
+@Table(name = "db_account_info")
 @EntityListeners(AuditingEntityListener.class)
-public class Account implements BaseData {
-
+public class AccountInfo {
     @Column(name = "id")
     @Id
     private final Long id;
 
-    @Column(name = "username")
-    private final String username;
+    @Column(name = "nickname")
+    private final String nickname;
 
-    @Column(name = "password")
-    private final String password;
+    @Column(name = "avatar")
+    private final String avatar;
 
-    @Column(name = "email")
-    private final String email;
-
-    @Column(name = "role")
-    private final String role;
-
-    @Column(name = "register_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private final LocalDateTime registerTime;
+    @Column(name = "birthday")
+    private final LocalDate birthday;
 
     @Column(name = "create_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -64,7 +55,11 @@ public class Account implements BaseData {
     @LastModifiedBy
     private Long updateUser;
 
-    @OneToOne(mappedBy = "account", cascade = {CascadeType.REMOVE})
-    private AccountInfo accountInfo;
-
+    @OneToOne
+    @JoinColumn(
+            name = "account_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_account_id", value = ConstraintMode.CONSTRAINT)
+    )
+    private Account account;
 }

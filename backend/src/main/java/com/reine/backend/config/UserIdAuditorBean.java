@@ -19,7 +19,6 @@ public class UserIdAuditorBean implements AuditorAware<Long> {
     public Optional<Long> getCurrentAuditor() {
         SecurityContext ctx = SecurityContextHolder.getContext();
         Long id = AccountIdThreadLocal.get();
-        AccountIdThreadLocal.remove();
         if (ctx == null) {
             return Optional.ofNullable(id);
         }

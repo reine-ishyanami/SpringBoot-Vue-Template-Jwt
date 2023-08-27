@@ -1,7 +1,9 @@
 package com.reine.backend.service.impl;
 
+import com.reine.backend.dao.AccountInfoRepository;
 import com.reine.backend.dao.AccountRepository;
 import com.reine.backend.entity.dto.Account;
+import com.reine.backend.entity.dto.AccountInfo;
 import com.reine.backend.entity.vo.request.ConfirmResetVO;
 import com.reine.backend.entity.vo.request.EmailRegisterVO;
 import com.reine.backend.entity.vo.request.EmailResetVo;
@@ -17,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Random;
@@ -33,6 +36,8 @@ public class AccountServiceImpl implements AccountService {
     private final FlowUtils flowUtils;
 
     private final AccountRepository accountRepository;
+
+    private final AccountInfoRepository accountInfoRepository;
 
     private final StringRedisTemplate redisTemplate;
 
@@ -89,14 +94,19 @@ public class AccountServiceImpl implements AccountService {
         if (this.existsAccountByEmail(email)) return "此邮箱已被注册";
         if (this.existsAccountByUsername(username)) return "此用户名已被注册";
         String password = encoder.encode(vo.getPassword());
-        long id = worker.nextId("account");
-        AccountIdThreadLocal.put(id);
-        Account account = new Account(id, username, password, email, "user", LocalDateTime.now());
+        long accountId = worker.nextId("account");
+        AccountIdThreadLocal.put(accountId);
+        Account account = new Account(accountId, username, password, email, "user", LocalDateTime.now());
+        long accountInfoId = worker.nextId("accountInfo");
         account = accountRepository.save(account);
-        if (account.getId() == null) {
+        AccountInfo accountInfo = new AccountInfo(accountInfoId, "", "", null);
+        accountInfo.setAccount(account);
+        accountInfo = accountInfoRepository.save(accountInfo);
+        if (account.getId() == null || accountInfo.getId() == null) {
             return "内部错误，请联系管理员";
         }
         redisTemplate.delete(key);
+        AccountIdThreadLocal.remove();
         return null;
     }
 
