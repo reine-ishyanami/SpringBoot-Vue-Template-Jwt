@@ -99,12 +99,10 @@ public class AccountServiceImpl implements AccountService {
         Account account = new Account(accountId, username, password, email, "user", LocalDateTime.now());
         long accountInfoId = worker.nextId("accountInfo");
         account = accountRepository.save(account);
-        AccountInfo accountInfo = new AccountInfo(accountInfoId, "", "", null);
+        AccountInfo accountInfo = new AccountInfo(accountInfoId, getRandomNickname(), "", null);
         accountInfo.setAccount(account);
         accountInfo = accountInfoRepository.save(accountInfo);
-        if (account.getId() == null || accountInfo.getId() == null) {
-            return "内部错误，请联系管理员";
-        }
+        if (account.getId() == null || accountInfo.getId() == null) return "内部错误，请联系管理员";
         redisTemplate.delete(key);
         AccountIdThreadLocal.remove();
         return null;
@@ -144,6 +142,18 @@ public class AccountServiceImpl implements AccountService {
 
     private boolean existsAccountByUsername(String username) {
         return accountRepository.existsAccountByUsername(username);
+    }
+
+    private String getRandomNickname() {
+        int length = 8;
+        StringBuilder nickname = new StringBuilder("user-");
+        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(str.length());
+            nickname.append(str.charAt(index));
+        }
+        return nickname.toString();
     }
 
 }
