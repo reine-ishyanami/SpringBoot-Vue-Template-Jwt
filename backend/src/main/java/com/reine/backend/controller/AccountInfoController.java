@@ -7,33 +7,27 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author reine
  */
+
 @RestController
-@Tag(name = "测试接口")
-@RequestMapping("/api/test")
 @RequiredArgsConstructor
 @Slf4j
-public class TestController {
+@Tag(name = "账号相关接口")
+@RequestMapping("/api/account")
+public class AccountInfoController {
 
-
-    @Value("${spring.application.name}")
-    private String projectName;
-
-    @Operation(summary = "测试Security拦截器")
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello World";
-    }
-
-
-    @Operation(summary = "文件上传测试")
-    @PostMapping("/upload")
-    public String uploadTest(
+    @Operation(summary = "上传头像")
+    @PostMapping("/avatar")
+    public String uploadAvatar(
+            @Value("${spring.application.name}") String projectName,
             @RequestPart("imgFile") MultipartFile imgFile
     ) throws JsonProcessingException {
         return FileUtils.upload(projectName, imgFile);
