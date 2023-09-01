@@ -24,13 +24,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/account")
 public class AccountInfoController {
 
+    private final FileUtils fileUtils;
+
     @Operation(summary = "上传头像")
     @PostMapping("/avatar")
-    public String uploadAvatar(
-            @Value("${spring.application.name}") String projectName,
-            @RequestPart("imgFile") MultipartFile imgFile
-    ) throws JsonProcessingException {
-        return FileUtils.upload(projectName, imgFile);
+    public String uploadAvatar(@RequestPart("imgFile") MultipartFile imgFile) {
+        return fileUtils.upload(imgFile);
     }
 
 }

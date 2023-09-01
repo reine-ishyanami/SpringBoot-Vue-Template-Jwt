@@ -20,9 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class TestController {
 
-
-    @Value("${spring.application.name}")
-    private String projectName;
+    private final FileUtils fileUtils;
 
     @Operation(summary = "测试Security拦截器")
     @GetMapping("/hello")
@@ -33,10 +31,8 @@ public class TestController {
 
     @Operation(summary = "文件上传测试")
     @PostMapping("/upload")
-    public String uploadTest(
-            @RequestPart("imgFile") MultipartFile imgFile
-    ) throws JsonProcessingException {
-        return FileUtils.upload(projectName, imgFile);
+    public String uploadTest(@RequestPart("imgFile") MultipartFile imgFile) {
+        return fileUtils.upload(imgFile);
     }
 
 }

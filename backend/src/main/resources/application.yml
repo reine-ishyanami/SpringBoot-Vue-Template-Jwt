@@ -32,3 +32,5 @@ spring:
     host: smtp.163.com
     username: xxx
     password: xxx
+image-host:
+  baseUrl: http://localhost:8824/image/
