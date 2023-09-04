@@ -13,7 +13,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Random;
+import java.util.*;
 
 /**
  * 文件操作工具类
@@ -24,7 +24,7 @@ import java.util.Random;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class FileUtils {
+public class FileHttpUtils {
 
     private final RestTemplate restTemplate;
 
@@ -34,6 +34,37 @@ public class FileUtils {
     @Value("${spring.application.name}")
     private String project;
 
+    /**
+     * 列出本项目下所有图片
+     *
+     * @return
+     */
+    public List<?> getImageListOfProject() {
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        params.add("project", project);
+        Response response = restTemplate.getForObject(baseUrl + "list", Response.class, params);
+        if (response != null && response.success) {
+            if (response.data() instanceof List<?> data) {
+                return data;
+            } else return Collections.emptyList();
+        } else return Collections.emptyList();
+    }
+
+    /**
+     * 删除远程图片
+     *
+     * @param url
+     */
+    public void removeImageFromWebStorage(String url) {
+        restTemplate.delete(url);
+    }
+
+    /**
+     * 上传文件
+     *
+     * @param file
+     * @return
+     */
     public String upload(MultipartFile file) {
         // 上传地址
         String url = baseUrl + project;
@@ -51,9 +82,10 @@ public class FileUtils {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(params, headers);
         Response response = restTemplate.postForObject(url, requestEntity, Response.class);
         if (response != null && response.success) {
-            Content data = response.data();
-            log.debug("{}", data);
-            return String.format("%s%s/%s", baseUrl, data.project, data.name);
+            if (response.data() instanceof Map<?, ?> data) {
+                log.debug("{}", data);
+                return String.format("%s%s/%s", baseUrl, data.get("project"), data.get("name"));
+            } else return "接口请求异常";
         } else return "接口请求异常";
     }
 
@@ -69,9 +101,6 @@ public class FileUtils {
         return filename.toString();
     }
 
-    private record Response(Boolean success, String message, Content data) {
-    }
-
-    private record Content(String project, String name) {
+    private record Response(Boolean success, String message, Object data) {
     }
 }
