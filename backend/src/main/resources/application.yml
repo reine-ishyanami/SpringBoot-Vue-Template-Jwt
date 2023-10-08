@@ -24,6 +24,9 @@ spring:
       - "/v3/api-docs/**"
       - "/doc.html"
       - "/webjars/**"
+      - "/index.html"
+      - "/favicon.ico"
+      - "/assets/**"
   jpa:
     hibernate:
       ddl-auto: update

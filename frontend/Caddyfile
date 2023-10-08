@@ -1,0 +1,8 @@
+:80 {
+	root * ./dist
+	file_server
+	rewrite / /index.html
+	handle / {
+		reverse_proxy 127.0.0.1:8080
+	}
+}
