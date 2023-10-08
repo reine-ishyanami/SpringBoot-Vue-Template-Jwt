@@ -1,5 +1,6 @@
 package com.reine.backend.controller;
 
+import com.reine.backend.entity.RestBean;
 import com.reine.backend.utils.FileHttpUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,8 +27,8 @@ public class AccountInfoController {
 
     @Operation(summary = "上传头像")
     @PostMapping("/avatar")
-    public String uploadAvatar(@RequestPart("imgFile") MultipartFile imgFile) {
-        return fileHttpUtils.upload(imgFile);
+    public RestBean<String> uploadAvatar(@RequestPart("imgFile") MultipartFile imgFile) {
+        return RestBean.success(fileHttpUtils.upload(imgFile));
     }
 
 }

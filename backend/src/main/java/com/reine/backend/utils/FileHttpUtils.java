@@ -44,9 +44,8 @@ public class FileHttpUtils {
         params.add("project", project);
         Response response = restTemplate.getForObject(baseUrl + "list", Response.class, params);
         if (response != null && response.success) {
-            if (response.data() instanceof List<?> data) {
-                return data;
-            } else return Collections.emptyList();
+            if (response.data() instanceof List<?> data) return data;
+            else return Collections.emptyList();
         } else return Collections.emptyList();
     }
 
@@ -72,7 +71,7 @@ public class FileHttpUtils {
     }
 
     private String formUpload(String url, MultipartFile file) {
-        String filename = getRandomFilename();
+        String filename = RandomUtils.getRandomStr(16);
         Resource resource = file.getResource();
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add("imgFile", resource);
@@ -82,23 +81,10 @@ public class FileHttpUtils {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(params, headers);
         Response response = restTemplate.postForObject(url, requestEntity, Response.class);
         if (response != null && response.success) {
-            if (response.data() instanceof Map<?, ?> data) {
-                log.debug("{}", data);
+            if (response.data() instanceof Map<?, ?> data)
                 return String.format("%s%s/%s", baseUrl, data.get("project"), data.get("name"));
-            } else return "接口请求异常";
+            else return "接口请求异常";
         } else return "接口请求异常";
-    }
-
-    private String getRandomFilename() {
-        int length = 16;
-        StringBuilder filename = new StringBuilder();
-        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        Random random = new Random();
-        for (int i = 0; i < length; i++) {
-            int index = random.nextInt(str.length());
-            filename.append(str.charAt(index));
-        }
-        return filename.toString();
     }
 
     private record Response(Boolean success, String message, Object data) {
