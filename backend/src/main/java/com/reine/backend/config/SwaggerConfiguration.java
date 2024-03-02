@@ -38,7 +38,6 @@ public class SwaggerConfiguration {
      * 配置文档介绍以及详细信息
      * @return OpenAPI
      */
-    @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
     @Bean
     public OpenAPI springShopOpenAPI() {
         return new OpenAPI()

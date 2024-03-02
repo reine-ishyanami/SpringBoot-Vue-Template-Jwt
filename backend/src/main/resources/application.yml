@@ -7,7 +7,7 @@ spring:
     name: SpringBoot-Vue-Jwt
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/test?serverTimezone=GMT%2B8
+    url: jdbc:mysql://localhost:3306/itbaima?serverTimezone=GMT%2B8
     username: root
     password: 123456
   jackson:

@@ -2,19 +2,18 @@ package com.reine.backend.config;
 
 import com.reine.backend.listener.MailQueueListener;
 import com.reine.backend.utils.Constant;
+import com.reine.backend.utils.RedisStreamUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.RedisSystemException;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.stream.Consumer;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.connection.stream.ReadOffset;
 import org.springframework.data.redis.connection.stream.StreamOffset;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.util.ErrorHandler;
 
@@ -37,20 +36,16 @@ public class RedisStreamConfiguration {
 
     private final MailQueueListener listener;
 
-    private final StringRedisTemplate template;
+    private final RedisStreamUtils streamUtils;
 
     @PostConstruct
     public void initConsumerGroup() {
-        try {
-            template.opsForStream().createGroup(Constant.REDIS_STREAM, Constant.REDIS_STREAM_CONSUMER_GROUP);
-        } catch (RedisSystemException ignore) {
-            //避免组已存在异常 BUSYGROUP Consumer Group name already exists
-        }
+        streamUtils.createGroup(Constant.REDIS_STREAM, Constant.REDIS_STREAM_CONSUMER_GROUP);
     }
 
     @PreDestroy
-    public void destroy(){
-
+    public void destroy() {
+        streamUtils.destroyGroup(Constant.REDIS_STREAM, Constant.REDIS_STREAM_CONSUMER_GROUP);
     }
 
 

@@ -1,6 +1,7 @@
 package com.reine.backend.utils;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.stream.Record;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -10,10 +11,12 @@ import java.util.Objects;
 
 /**
  * 使用redis的stream数据类型实现消息队列
+ *
  * @author reine
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class RedisStreamUtils {
 
     private final StringRedisTemplate redisTemplate;
@@ -25,8 +28,21 @@ public class RedisStreamUtils {
      * @param group 组名称
      * @return {@link String}
      */
-    public String createGroup(String key, String group) {
-        return redisTemplate.opsForStream().createGroup(key, group);
+    public void createGroup(String key, String group) {
+        String res = redisTemplate.opsForStream().createGroup(key, group);
+        if (res.equals("OK")) log.info("Consumption group successfully created");
+    }
+
+    /**
+     * 删除消费组
+     *
+     * @param key   键
+     * @param group 组名称
+     * @return {@link String}
+     */
+    public void destroyGroup(String key, String group) {
+        boolean equals = Boolean.TRUE.equals(redisTemplate.opsForStream().destroyGroup(key, group));
+        if (equals) log.info("Consumer group successfully deleted");
     }
 
     /**
